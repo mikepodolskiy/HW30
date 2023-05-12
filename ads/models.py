@@ -1,3 +1,17 @@
 from django.db import models
 
-# Create your models here.
+ADC
+
+id
+name
+author
+price
+description
+addres
+is_published
+
+Categories
+
+id
+name
+

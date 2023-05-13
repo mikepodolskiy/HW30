@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', ads.views.index),
     path('ads/', ads.views.AdsView.as_view(), name="all_ads"),
+    path('ads/<int:pk>', ads.views.AdDetailView.as_view(), name="ad"),
     path('cat/', ads.views.CategoriesView.as_view(), name="all_categories"),
+    path('cat/<int:pk>', ads.views.CategoryDetailView.as_view(), name="category"),
 ]

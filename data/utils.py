@@ -34,6 +34,7 @@ def csv_json_converter(csv_file_path, json_file_path, model_path):
     for item in bool_upd_data:
         new_item = {"pk": item["id"], "model": model_path, "fields": {k: v for k, v in item.items() if k != "id"}}
         django_format_data.append(new_item)
+
     with open(json_file_path, "w", encoding="utf-8") as file:
         json.dump(django_format_data, file, ensure_ascii=False)
 

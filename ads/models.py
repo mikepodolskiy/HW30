@@ -10,7 +10,13 @@ class Ads(models.Model):
     address = models.CharField(max_length=280)
     is_published = models.BooleanField()
 
+    def __str__(self):
+        return self.name
+
 
 class Categories(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=140)
+
+    def __str__(self):
+        return self.name

@@ -39,5 +39,7 @@ def csv_json_converter(csv_file_path, json_file_path, model_path):
         json.dump(django_format_data, file, ensure_ascii=False)
 
 
-csv_json_converter('./datasets/ads.csv', '../fixtures/ads.json', 'ads.ads')
-csv_json_converter('./datasets/categories.csv', '../fixtures/categories.json', 'ads.categories')
+csv_json_converter('./datasets/ads.csv', '../ads/fixtures/ads.json', 'ads.ads')
+csv_json_converter('./datasets/categories.csv', '../ads/fixtures/categories.json', 'ads.categories')
+csv_json_converter('./datasets/location.csv', '../ads/fixtures/location.json', 'ads.location')
+csv_json_converter('./datasets/user.csv', '../ads/fixtures/user.json', 'ads.user')

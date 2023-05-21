@@ -52,7 +52,6 @@ class Ads(models.Model):
     image = models.ImageField(upload_to='logos/', blank=True, null=True)
     category_id = models.ForeignKey(Categories, on_delete=models.CASCADE)
 
-
     def __str__(self):
         return self.name
 

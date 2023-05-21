@@ -30,20 +30,6 @@ def csv_json_converter(csv_file_path, json_file_path, model_path):
         else:
             bool_upd_data = upd_data
 
-    # id_update_data = []
-    # for item in bool_upd_data:
-    #     if "category_id" in item.keys():
-    #         item["category"] = item["category_id"]
-    #         del item["category_id"]
-    #     if "author_id" in item.keys():
-    #         item["author"] = item["author_id"]
-    #         del item["author_id"]
-    #     if "location_id" in item.keys():
-    #         item["location"] = item["location_id"]
-    #         del item["location_id"]
-
-        # id_update_data.append(item)
-
     django_format_data = []
     # for item in id_update_data:
     for item in bool_upd_data:

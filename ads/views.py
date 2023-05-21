@@ -2,6 +2,7 @@
 import json
 
 from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -28,7 +29,11 @@ class AdsListView(ListView):
         :return: json response with data according to TDA
         """
         super().get(request, *args, **kwargs)
+
+        # sorting
         self.object_list = self.object_list.order_by("-price")
+
+        # pagination
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)
@@ -43,6 +48,7 @@ class AdsListView(ListView):
             "category_id": ad.category_id.id
         } for ad in page_obj]
 
+        # forming response
         response = [{
             "items": ads,
             "total": paginator.count,
@@ -89,6 +95,7 @@ class AdCreateView(CreateView):
         """
         ad_data = json.loads(request.body)
 
+        # getting objects from another instances, which are used as source of data
         author_id = get_object_or_404(User, pk=ad_data.get("author_id"))
         category_id = get_object_or_404(Categories, pk=ad_data.get("author_id"))
 
@@ -123,8 +130,11 @@ class AdUpdateView(UpdateView):
 
     def patch(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
+
+        # getting data from request
         ad_data = json.loads(request.body)
 
+        # checking what data are in request and set new object data, request to another instances if required
         if "name" in ad_data:
             self.object.name = ad_data["name"]
         if "author_id" in ad_data:
@@ -142,6 +152,7 @@ class AdUpdateView(UpdateView):
             category_id = get_object_or_404(Categories, pk=ad_data.get("category_id"))
             self.object.category_id = category_id
 
+        # save data to db
         self.object.save()
 
         return JsonResponse({
@@ -292,7 +303,9 @@ class CategoryDeleteView(DeleteView):
 
 # CRUD for User
 class UserListView(ListView):
-    model = User
+    # model = User
+    queryset = User.objects.prefetch_related("location_id").annotate(
+        total_ads=Count("ads", filter=Q(ads__is_published=True)))
 
     def get(self, request, *args, **kwargs):
         """
@@ -301,7 +314,9 @@ class UserListView(ListView):
         :return: json response with data according to TDA
         """
         super().get(request, *args, **kwargs)
+        # sorting
         self.object_list = self.object_list.order_by("username")
+
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)
@@ -314,6 +329,7 @@ class UserListView(ListView):
             "role": user.role,
             "age": user.age,
             "location_id": user.location_id.id,
+            "total_ads": user.total_ads
         } for user in page_obj]
 
         response = [{
@@ -336,6 +352,8 @@ class UserDetailView(DetailView):
        :return: data according to TDA
        """
         user = self.get_object()
+        # counting by ads
+
         response = {
             "id": user.id,
             "name": user.first_name,
@@ -412,7 +430,6 @@ class UserUpdateView(UpdateView):
         if "location_id" in user_data:
             location_id = get_object_or_404(Location, pk=user_data.get("location_id"))
             self.object.location_id = location_id
-
 
         self.object.save()
 

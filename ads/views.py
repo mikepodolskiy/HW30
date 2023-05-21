@@ -28,6 +28,7 @@ class AdsListView(ListView):
         :return: json response with data according to TDA
         """
         super().get(request, *args, **kwargs)
+        self.object_list = self.object_list.order_by("-price")
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)
@@ -204,6 +205,7 @@ class CategoriesListView(ListView):
         :return: json response with data according to TDA
         """
         super().get(request, *args, **kwargs)
+        self.object_list = self.object_list.order_by("name")
 
         response = [{
             "id": category.id,
@@ -299,6 +301,7 @@ class UserListView(ListView):
         :return: json response with data according to TDA
         """
         super().get(request, *args, **kwargs)
+        self.object_list = self.object_list.order_by("username")
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)

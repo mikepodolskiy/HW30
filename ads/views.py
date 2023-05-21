@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from HW27 import settings
-from ads.models import Ads, Categories, User
+from ads.models import Ads, Categories, User, Location
 
 
 # start page using FBV
@@ -91,7 +91,6 @@ class AdCreateView(CreateView):
         author_id = get_object_or_404(User, pk=ad_data.get("author_id"))
         category_id = get_object_or_404(Categories, pk=ad_data.get("author_id"))
 
-
         ad = Ads.objects.create(
             name=ad_data["name"],
             author_id=author_id,
@@ -101,8 +100,6 @@ class AdCreateView(CreateView):
             image=ad_data["image"],
             category_id=category_id,
         )
-
-
 
         return JsonResponse({
             "id": ad.id,
@@ -289,3 +286,196 @@ class CategoryDeleteView(DeleteView):
         super().delete(request, *args, **kwargs)
 
         return JsonResponse({"status": "ok"}, status=200)
+
+
+# CRUD for User
+class UserListView(ListView):
+    model = User
+
+    def get(self, request, *args, **kwargs):
+        """
+        method for getting all users
+        :param request: request
+        :return: json response with data according to TDA
+        """
+        super().get(request, *args, **kwargs)
+        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
+        page_num = request.GET.get("page")
+        page_obj = paginator.get_page(page_num)
+        users = [{
+            "id": user.id,
+            "name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "password": user.password,
+            "role": user.role,
+            "age": user.age,
+            "location_id": user.location_id.id,
+        } for user in page_obj]
+
+        response = [{
+            "items": users,
+            "total": paginator.count,
+            "num_pages": paginator.num_pages
+        }]
+
+        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+
+
+# class for view of one element
+class UserDetailView(DetailView):
+    model = User
+
+    def get(self, request, *args, **kwargs):
+        """
+       method for getting one element info
+       :param request: request
+       :return: data according to TDA
+       """
+        user = self.get_object()
+        response = {
+            "id": user.id,
+            "name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "password": user.password,
+            "role": user.role,
+            "age": user.age,
+            "location_id": user.location_id.id,
+        }
+        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class UserCreateView(CreateView):
+    model = User
+    fields = ["id", "first_name", "last_name", "username", "password", "role", "age", "location_id"]
+
+    def post(self, request, *args, **kwargs):
+        """
+        method for add ad data
+        :param request: request
+        :return: saving new data to db
+        """
+        user_data = json.loads(request.body)
+
+        location_id = get_object_or_404(Location, pk=user_data.get("location_id"))
+
+        user = User.objects.create(
+            first_name=user_data["first_name"],
+            last_name=user_data["last_name"],
+            username=user_data["username"],
+            password=user_data["password"],
+            role=user_data["role"],
+            age=user_data["age"],
+            location_id=location_id,
+        )
+
+        return JsonResponse({
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "password": user.password,
+            "role": user.role,
+            "age": user.age,
+            "location_id": user.location_id.id,
+        })
+
+
+# update class for ads
+
+@method_decorator(csrf_exempt, name="dispatch")
+class UserUpdateView(UpdateView):
+    model = User
+    fields = ["id", "first_name", "last_name", "username", "password", "role", "age", "location_id"]
+
+    def patch(self, request, *args, **kwargs):
+        super().post(request, *args, **kwargs)
+        user_data = json.loads(request.body)
+
+        if "first_name" in user_data:
+            self.object.first_name = user_data["first_name"]
+        if "last_name" in user_data:
+            self.object.last_name = user_data["last_name"]
+        if "username" in user_data:
+            self.object.username = user_data["username"]
+        if "password" in user_data:
+            self.object.password = user_data["password"]
+        if "role" in user_data:
+            self.object.role = user_data["role"]
+        if "age" in user_data:
+            self.object.age = user_data["age"]
+        if "location_id" in user_data:
+            location_id = get_object_or_404(Location, pk=user_data.get("location_id"))
+            self.object.location_id = location_id
+
+
+        self.object.save()
+
+        return JsonResponse({
+            "first_name": self.object.first_name,
+            "last_name": self.object.last_name,
+            "username": self.object.username,
+            "password": self.object.password,
+            "role": self.object.role,
+            "age": self.object.age,
+            "location_id": location_id.id
+        })
+
+
+# delete class for ads
+
+@method_decorator(csrf_exempt, name="dispatch")
+class UserDeleteView(DeleteView):
+    model = User
+    success_url = "/"  # where to redirect after deleting
+
+    def delete(self, request, *args, **kwargs):
+        super().delete(request, *args, **kwargs)
+
+        return JsonResponse({"status": "ok"}, status=200)
+
+
+class LocationListView(ListView):
+    model = Location
+
+    def get(self, request, *args, **kwargs):
+        """
+        method for getting all ads
+        :param request: request
+        :return: json response with data according to TDA
+        """
+        super().get(request, *args, **kwargs)
+
+        response = [{
+            "name": loc.name,
+            "lat": loc.lat,
+            "lng": loc.lng
+        } for loc in self.object_list]
+        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class LocationCreateView(CreateView):
+    model = Location
+    fields = ["id", "name", "lat", "lng"]
+
+    def post(self, request, *args, **kwargs):
+        """
+        method for add location data
+        :param request: request
+        :return: saving new data to db
+        """
+        location_data = json.loads(request.body)
+
+        location = Location.objects.create(
+            name=location_data["name"],
+            lat=location_data["lat"],
+            lng=location_data["lng"],
+        )
+        return JsonResponse({
+            "name": location.name,
+            "lat": location.lat,
+            "lng": location.lng,
+        })

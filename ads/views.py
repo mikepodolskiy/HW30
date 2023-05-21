@@ -1,12 +1,14 @@
 # import required libraries and modules
 import json
 
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from HW27 import settings
 from ads.models import Ads, Categories, User
 
 
@@ -26,8 +28,10 @@ class AdsListView(ListView):
         :return: json response with data according to TDA
         """
         super().get(request, *args, **kwargs)
-
-        response = [{
+        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
+        page_num = request.GET.get("page")
+        page_obj = paginator.get_page(page_num)
+        ads = [{
             "id": ad.id,
             "name": ad.name,
             "author_id": ad.author_id.id,
@@ -36,7 +40,13 @@ class AdsListView(ListView):
             "is_published": ad.is_published,
             "image": ad.image.url,
             "category_id": ad.category_id.id
-        } for ad in self.object_list]
+        } for ad in page_obj]
+
+        response = [{
+            "items": ads,
+            "total": paginator.count,
+            "num_pages": paginator.num_pages
+        }]
 
         return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
 

@@ -1,1 +1,37 @@
-[{"pk": "1", "model": "ads.categories", "fields": {"name": "Котики"}}, {"pk": "2", "model": "ads.categories", "fields": {"name": "Песики"}}, {"pk": "3", "model": "ads.categories", "fields": {"name": "Книги"}}, {"pk": "4", "model": "ads.categories", "fields": {"name": "Растения"}}, {"pk": "5", "model": "ads.categories", "fields": {"name": "Мебель и интерьер"}}]
+[
+  {
+    "pk": "1",
+    "model": "ads.categories",
+    "fields": {
+      "name": "Котики"
+    }
+  },
+  {
+    "pk": "2",
+    "model": "ads.categories",
+    "fields": {
+      "name": "Песики"
+    }
+  },
+  {
+    "pk": "3",
+    "model": "ads.categories",
+    "fields": {
+      "name": "Книги"
+    }
+  },
+  {
+    "pk": "4",
+    "model": "ads.categories",
+    "fields": {
+      "name": "Растения"
+    }
+  },
+  {
+    "pk": "5",
+    "model": "ads.categories",
+    "fields": {
+      "name": "Мебель и интерьер"
+    }
+  }
+]

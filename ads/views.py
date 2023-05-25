@@ -67,6 +67,11 @@ class AdsListView(ListAPIView):
     serializer_class = AdsListSerializer
 
     def get(self, request, *args, **kwargs):
+
+        ad_text = request.GET.get("text", None)
+        if ad_text:
+            self.queryset = self.queryset.filter(name__icontains=ad_text)
+
         cats = request.GET.getlist("cat", None)
         cats_query = None
         for cat in cats:
@@ -76,6 +81,14 @@ class AdsListView(ListAPIView):
                 cats_query |= Q(category__id__exact=cat)
         if cats_query:
             self.queryset = self.queryset.filter(cats_query)
+
+
+
+
+
+
+
+
         return super().get(request, *args, **kwargs)
 
 

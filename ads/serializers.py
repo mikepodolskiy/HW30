@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ads.models import Location, User
+from ads.models import Location, User, Ads
 
 
 class AdsListSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class AdsListSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Location
+        model = Ads
         fields = "__all__"
 
 

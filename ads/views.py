@@ -8,11 +8,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 
 from HW27 import settings
 from ads.models import Ads, Categories, User, Location
-from ads.serializers import UserCreateSerializer
+from ads.serializers import UserCreateSerializer, LocationListSerializer, LocationDetailSerializer, \
+    LocationCreateSerializer, LocationUpdateSerializer, LocationDeleteSerializer
 
 
 # start page using FBV
@@ -323,7 +324,6 @@ class UserListView(ListView):
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)
 
-
         response = [{
             "items": [user.serialize() for user in page_obj],
             "total": paginator.count,
@@ -345,7 +345,6 @@ class UserDetailView(DetailView):
        """
         user = self.get_object()
         # counting by ads
-
 
         return JsonResponse(user.serialize(), safe=False, json_dumps_params={"ensure_ascii": False})
 
@@ -377,7 +376,6 @@ class UserCreateView(CreateAPIView):
     serializer_class = UserCreateSerializer
 
 
-
 # update class for ads
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -407,7 +405,6 @@ class UserUpdateView(UpdateView):
                 loc, created = Location.objects.get_or_create(name=location_name)
                 self.object.locations.add(loc)
 
-
         return JsonResponse(self.object.serialize())
 
 
@@ -424,45 +421,73 @@ class UserDeleteView(DeleteView):
         return JsonResponse({"status": "ok"}, status=200)
 
 
-class LocationListView(ListView):
-    model = Location
+# Location views with DRF
 
-    def get(self, request, *args, **kwargs):
-        """
-        method for getting all ads
-        :param request: request
-        :return: json response with data according to TDA
-        """
-        super().get(request, *args, **kwargs)
-
-        response = [{
-            "name": loc.name,
-            "lat": loc.lat,
-            "lng": loc.lng
-        } for loc in self.object_list]
-        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+class LocationListView(ListAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationListSerializer
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class LocationCreateView(CreateView):
-    model = Location
-    fields = ["id", "name", "lat", "lng"]
+class LocationDetailView(RetrieveAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationDetailSerializer
 
-    def post(self, request, *args, **kwargs):
-        """
-        method for add location data
-        :param request: request
-        :return: saving new data to db
-        """
-        location_data = json.loads(request.body)
 
-        location = Location.objects.create(
-            name=location_data["name"],
-            lat=location_data["lat"],
-            lng=location_data["lng"],
-        )
-        return JsonResponse({
-            "name": location.name,
-            "lat": location.lat,
-            "lng": location.lng,
-        })
+class LocationCreateView(CreateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationCreateSerializer
+
+
+class LocationUpdateView(UpdateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationUpdateSerializer
+
+
+class LocationDeleteView(DestroyAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationDeleteSerializer
+
+################################################################
+# class LocationListView(ListView):
+#     model = Location
+#
+#     def get(self, request, *args, **kwargs):
+#         """
+#         method for getting all ads
+#         :param request: request
+#         :return: json response with data according to TDA
+#         """
+#         super().get(request, *args, **kwargs)
+#
+#         response = [{
+#             "name": loc.name,
+#             "lat": loc.lat,
+#             "lng": loc.lng
+#         } for loc in self.object_list]
+#         return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+#
+#
+# @method_decorator(csrf_exempt, name="dispatch")
+# class LocationCreateView(CreateView):
+#     model = Location
+#     fields = ["id", "name", "lat", "lng"]
+#
+#     def post(self, request, *args, **kwargs):
+#         """
+#         method for add location data
+#         :param request: request
+#         :return: saving new data to db
+#         """
+#         location_data = json.loads(request.body)
+#
+#         location = Location.objects.create(
+#             name=location_data["name"],
+#             lat=location_data["lat"],
+#             lng=location_data["lng"],
+#         )
+#         return JsonResponse({
+#             "name": location.name,
+#             "lat": location.lat,
+#             "lng": location.lng,
+#         })
+##################################################################

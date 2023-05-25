@@ -3,6 +3,18 @@ from rest_framework import serializers
 from ads.models import Location, User
 
 
+class AdsListSerializer(serializers.ModelSerializer):
+    author = serializers.CharField()
+    category = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field="id"
+    )
+
+    class Meta:
+        model = Location
+        fields = "__all__"
+
+
 class LocationListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location

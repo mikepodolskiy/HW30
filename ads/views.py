@@ -13,7 +13,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView,
 from HW27 import settings
 from ads.models import Ads, Categories, User, Location
 from ads.serializers import UserCreateSerializer, LocationListSerializer, LocationDetailSerializer, \
-    LocationCreateSerializer, LocationUpdateSerializer, LocationDeleteSerializer
+    LocationCreateSerializer, LocationUpdateSerializer, LocationDeleteSerializer, AdsListSerializer
 
 
 # start page using FBV
@@ -22,43 +22,61 @@ def index(request):
 
 
 # CBV for ads
-class AdsListView(ListView):
-    model = Ads
+# class AdsListView(ListView):
+#     model = Ads
+#     queryset = Ads.objects.all()
+#
+#     def get(self, request, *args, **kwargs):
+#         """
+#         method for getting all ads
+#         :param request: request
+#         :return: json response with data according to TDA
+#         """
+#         super().get(request, *args, **kwargs)
+#
+#         # sorting
+#         self.object_list = self.object_list.order_by("-price")
+#
+#         # pagination
+#         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
+#         page_num = request.GET.get("page")
+#         page_obj = paginator.get_page(page_num)
+#         ads = [{
+#             "id": ad.id,
+#             "name": ad.name,
+#             "author": ad.author.id,
+#             "price": ad.price,
+#             "description": ad.description,
+#             "is_published": ad.is_published,
+#             "image": ad.image.url,
+#             "category": ad.category.id
+#         } for ad in page_obj]
+#
+#         # forming response
+#         response = [{
+#             "items": ads,
+#             "total": paginator.count,
+#             "num_pages": paginator.num_pages
+#         }]
+#
+#         return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+
+
+class AdsListView(ListAPIView):
+    queryset = Ads.objects.all()
+    serializer_class = AdsListSerializer
 
     def get(self, request, *args, **kwargs):
-        """
-        method for getting all ads
-        :param request: request
-        :return: json response with data according to TDA
-        """
-        super().get(request, *args, **kwargs)
-
-        # sorting
-        self.object_list = self.object_list.order_by("-price")
-
-        # pagination
-        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
-        page_num = request.GET.get("page")
-        page_obj = paginator.get_page(page_num)
-        ads = [{
-            "id": ad.id,
-            "name": ad.name,
-            "author": ad.author.id,
-            "price": ad.price,
-            "description": ad.description,
-            "is_published": ad.is_published,
-            "image": ad.image.url,
-            "category": ad.category.id
-        } for ad in page_obj]
-
-        # forming response
-        response = [{
-            "items": ads,
-            "total": paginator.count,
-            "num_pages": paginator.num_pages
-        }]
-
-        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+        cats = request.GET.getlist("cat", None)
+        cats_query = None
+        for cat in cats:
+            if cats_query is None:
+                cats_query = Q(category_id__exact=cat)
+            else:
+                cats_query |= Q(category__id__exact=cat)
+        if cats_query:
+            self.queryset = self.queryset.filter(cats_query)
+        return super().get(request, *args, **kwargs)
 
 
 # class for view of one element
@@ -211,6 +229,7 @@ class AdImageView(UpdateView):
 # CBV for categories
 class CategoriesListView(ListView):
     model = Categories
+    queryset = Categories.objects.all()
 
     def get(self, request, *args, **kwargs):
         """

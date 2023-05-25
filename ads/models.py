@@ -2,9 +2,9 @@ from django.db import models
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=140, unique=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6)
-    lng = models.DecimalField(max_digits=9, decimal_places=6)
+    name = models.CharField(max_length=140, unique=True, null=True)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True)
 
     def __str__(self):
         return self.name
@@ -22,10 +22,23 @@ class User(models.Model):
     password = models.CharField(max_length=140)
     role = models.CharField(max_length=9, choices=ROLE)
     age = models.PositiveSmallIntegerField()
-    location_id = models.ForeignKey(Location, on_delete=models.CASCADE)
+    locations = models.ManyToManyField("Location")
+
 
     def __str__(self):
         return self.username
+
+    def serialize(self):
+        return{
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "username": self.username,
+            "role": self.role,
+            "age": self.age,
+            "locations": [location.name for location in self.locations.all()],
+
+        }
 
     class Meta:
         verbose_name = "Пользователь"
@@ -45,12 +58,12 @@ class Categories(models.Model):
 
 class Ads(models.Model):
     name = models.CharField(max_length=140)
-    author_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default=0)
     description = models.TextField()
     is_published = models.BooleanField(default=False)
     image = models.ImageField(upload_to='logos/', blank=True, null=True)
-    category_id = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    category = models.ForeignKey(Categories, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

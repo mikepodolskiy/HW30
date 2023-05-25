@@ -40,12 +40,12 @@ class AdsListView(ListView):
         ads = [{
             "id": ad.id,
             "name": ad.name,
-            "author_id": ad.author_id.id,
+            "author": ad.author.id,
             "price": ad.price,
             "description": ad.description,
             "is_published": ad.is_published,
             "image": ad.image.url,
-            "category_id": ad.category_id.id
+            "category": ad.category.id
         } for ad in page_obj]
 
         # forming response
@@ -72,12 +72,12 @@ class AdDetailView(DetailView):
         response = {
             "id": ad.id,
             "name": ad.name,
-            "author_id": ad.author_id.id,
+            "author": ad.author.id,
             "price": ad.price,
             "description": ad.description,
             "is_published": ad.is_published,
             "image": ad.image.url,
-            "category_id": ad.category_id.id
+            "category": ad.category.id
         }
         return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
 
@@ -85,7 +85,7 @@ class AdDetailView(DetailView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdCreateView(CreateView):
     model = Ads
-    fields = ["id", "name", "author_id", "price", "description", "is_published", "image", "category_id"]
+    fields = ["id", "name", "author", "price", "description", "is_published", "image", "category"]
 
     def post(self, request, *args, **kwargs):
         """
@@ -96,28 +96,28 @@ class AdCreateView(CreateView):
         ad_data = json.loads(request.body)
 
         # getting objects from another instances, which are used as source of data
-        author_id = get_object_or_404(User, pk=ad_data.get("author_id"))
-        category_id = get_object_or_404(Categories, pk=ad_data.get("author_id"))
+        author = get_object_or_404(User, pk=ad_data.get("author"))
+        category = get_object_or_404(Categories, pk=ad_data.get("author"))
 
         ad = Ads.objects.create(
             name=ad_data["name"],
-            author_id=author_id,
+            author=author,
             price=ad_data["price"],
             description=ad_data["description"],
             is_published=ad_data["is_published"],
             image=ad_data["image"],
-            category_id=category_id,
+            category=category,
         )
 
         return JsonResponse({
             "id": ad.id,
             "name": ad.name,
-            "author_id": ad.author_id.id,
+            "author": ad.author.id,
             "price": ad.price,
             "description": ad.description,
             "is_published": ad.is_published,
             "image": ad.image.url,
-            "category_id": ad.category_id.id
+            "category": ad.category.id
         })
 
 
@@ -126,7 +126,7 @@ class AdCreateView(CreateView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdUpdateView(UpdateView):
     model = Ads
-    fields = ["id", "name", "author_id", "price", "description", "is_published", "image", "category_id"]
+    fields = ["id", "name", "author", "price", "description", "is_published", "image", "category"]
 
     def patch(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
@@ -137,9 +137,9 @@ class AdUpdateView(UpdateView):
         # checking what data are in request and set new object data, request to another instances if required
         if "name" in ad_data:
             self.object.name = ad_data["name"]
-        if "author_id" in ad_data:
-            author_id = get_object_or_404(User, pk=ad_data.get("author_id"))
-            self.object.author_id = author_id
+        if "author" in ad_data:
+            author = get_object_or_404(User, pk=ad_data.get("author"))
+            self.object.author = author
         if "price" in ad_data:
             self.object.price = ad_data["price"]
         if "description" in ad_data:
@@ -148,9 +148,9 @@ class AdUpdateView(UpdateView):
             self.object.image = ad_data["image"]
         if "is_published" in ad_data:
             self.object.is_published = ad_data["is_published"]
-        if "category_id" in ad_data:
-            category_id = get_object_or_404(Categories, pk=ad_data.get("category_id"))
-            self.object.category_id = category_id
+        if "category" in ad_data:
+            category = get_object_or_404(Categories, pk=ad_data.get("category"))
+            self.object.category = category
 
         # save data to db
         self.object.save()
@@ -158,12 +158,12 @@ class AdUpdateView(UpdateView):
         return JsonResponse({
             "id": self.object.id,
             "name": self.object.name,
-            "author_id": author_id.id,
+            "author": self.object.author.id,
             "price": self.object.price,
             "description": self.object.description,
             "is_published": self.object.is_published,
             "image": self.object.image.url,
-            "category_is": category_id.id
+            "category": self.object.category.id
         })
 
 
@@ -184,7 +184,7 @@ class AdDeleteView(DeleteView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdImageView(UpdateView):
     model = Ads
-    fields = ["id", "name", "author_id", "price", "description", "address", "is_published", "image", "category_id"]
+    fields = ["id", "name", "author", "price", "description", "address", "is_published", "image", "category"]
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -196,12 +196,12 @@ class AdImageView(UpdateView):
         return JsonResponse({
             "id": self.object.id,
             "name": self.object.name,
-            "author_id": self.object.author_id.id,
+            "author_id": self.object.author.id,
             "price": self.object.price,
             "description": self.object.description,
             "is_published": self.object.is_published,
             "image": self.object.image.url if self.object.image else None,
-            "category_id": self.object.category_id.id
+            "category_id": self.object.category.id
         })
 
 
@@ -303,8 +303,8 @@ class CategoryDeleteView(DeleteView):
 
 # CRUD for User
 class UserListView(ListView):
-    # model = User
-    queryset = User.objects.prefetch_related("location_id").annotate(
+    model = User
+    queryset = User.objects.prefetch_related("locations").annotate(
         total_ads=Count("ads", filter=Q(ads__is_published=True)))
 
     def get(self, request, *args, **kwargs):
@@ -320,20 +320,10 @@ class UserListView(ListView):
         paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)
-        users = [{
-            "id": user.id,
-            "name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "password": user.password,
-            "role": user.role,
-            "age": user.age,
-            "location_id": user.location_id.id,
-            "total_ads": user.total_ads
-        } for user in page_obj]
+
 
         response = [{
-            "items": users,
+            "items": [user.serialize() for user in page_obj],
             "total": paginator.count,
             "num_pages": paginator.num_pages
         }]
@@ -354,23 +344,14 @@ class UserDetailView(DetailView):
         user = self.get_object()
         # counting by ads
 
-        response = {
-            "id": user.id,
-            "name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "password": user.password,
-            "role": user.role,
-            "age": user.age,
-            "location_id": user.location_id.id,
-        }
-        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+
+        return JsonResponse(user.serialize(), safe=False, json_dumps_params={"ensure_ascii": False})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
 class UserCreateView(CreateView):
     model = User
-    fields = ["id", "first_name", "last_name", "username", "password", "role", "age", "location_id"]
+    fields = ["id", "first_name", "last_name", "username", "password", "role", "age", "locations"]
 
     def post(self, request, *args, **kwargs):
         """
@@ -380,28 +361,14 @@ class UserCreateView(CreateView):
         """
         user_data = json.loads(request.body)
 
-        location_id = get_object_or_404(Location, pk=user_data.get("location_id"))
+        locations = user_data.pop("locations")
+        user = User.objects.create(**user_data)
 
-        user = User.objects.create(
-            first_name=user_data["first_name"],
-            last_name=user_data["last_name"],
-            username=user_data["username"],
-            password=user_data["password"],
-            role=user_data["role"],
-            age=user_data["age"],
-            location_id=location_id,
-        )
+        for location_name in locations:
+            loc, created = Location.objects.get_or_create(name=location_name)
+            user.locations.add(loc)
 
-        return JsonResponse({
-            "id": user.id,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "password": user.password,
-            "role": user.role,
-            "age": user.age,
-            "location_id": user.location_id.id,
-        })
+        return JsonResponse(user.serialize())
 
 
 # update class for ads
@@ -427,21 +394,14 @@ class UserUpdateView(UpdateView):
             self.object.role = user_data["role"]
         if "age" in user_data:
             self.object.age = user_data["age"]
-        if "location_id" in user_data:
-            location_id = get_object_or_404(Location, pk=user_data.get("location_id"))
-            self.object.location_id = location_id
+        if "locations" in user_data:
+            locations = user_data.get("locations")
+            for location_name in locations:
+                loc, created = Location.objects.get_or_create(name=location_name)
+                self.object.locations.add(loc)
 
-        self.object.save()
 
-        return JsonResponse({
-            "first_name": self.object.first_name,
-            "last_name": self.object.last_name,
-            "username": self.object.username,
-            "password": self.object.password,
-            "role": self.object.role,
-            "age": self.object.age,
-            "location_id": location_id.id
-        })
+        return JsonResponse(self.object.serialize())
 
 
 # delete class for ads

@@ -29,18 +29,41 @@ def csv_json_converter(csv_file_path, json_file_path, model_path):
             bool_upd_data.append(item)
         else:
             bool_upd_data = upd_data
+    # delete  letters id in columns
+    id_update_data = []
+    for item in bool_upd_data:
+        if "category_id" in item.keys():
+            item["category"] = item["category_id"]
+            del item["category_id"]
+            id_update_data.append(item)
+        else:
+            id_update_data = bool_upd_data
+        if "author_id" in item.keys():
+            item["author"] = item["author_id"]
+            del item["author_id"]
+            id_update_data.append(item)
+        else:
+            id_update_data = id_update_data
+        if "location_id" in item.keys():
+            item["locations"] = [item["location_id"]]
+            del item["location_id"]
+            id_update_data.append(item)
+        else:
+            id_update_data = id_update_data
+
+
 
     django_format_data = []
-    # for item in id_update_data:
-    for item in bool_upd_data:
+    for item in id_update_data:
+    # for item in bool_upd_data:
         new_item = {"pk": item["id"], "model": model_path, "fields": {k: v for k, v in item.items() if k != "id"}}
         django_format_data.append(new_item)
 
     with open(json_file_path, "w", encoding="utf-8") as file:
         json.dump(django_format_data, file, ensure_ascii=False)
 
-
-csv_json_converter('./datasets/ad.csv', '../ads/fixtures/ads.json', 'ads.ads')
-csv_json_converter('./datasets/categories.csv', '../ads/fixtures/categories.json', 'ads.categories')
-csv_json_converter('./datasets/location.csv', '../ads/fixtures/location.json', 'ads.location')
+#
+# csv_json_converter('./datasets/ad.csv', '../ads/fixtures/ads.json', 'ads.ads')
+# csv_json_converter('./datasets/categories.csv', '../ads/fixtures/categories.json', 'ads.categories')
+# csv_json_converter('./datasets/location.csv', '../ads/fixtures/location.json', 'ads.location')
 csv_json_converter('./datasets/user.csv', '../ads/fixtures/user.json', 'ads.user')

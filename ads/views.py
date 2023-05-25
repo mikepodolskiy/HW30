@@ -8,9 +8,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from rest_framework.generics import CreateAPIView
 
 from HW27 import settings
 from ads.models import Ads, Categories, User, Location
+from ads.serializers import UserCreateSerializer
 
 
 # start page using FBV
@@ -348,27 +350,32 @@ class UserDetailView(DetailView):
         return JsonResponse(user.serialize(), safe=False, json_dumps_params={"ensure_ascii": False})
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class UserCreateView(CreateView):
-    model = User
-    fields = ["id", "first_name", "last_name", "username", "password", "role", "age", "locations"]
+# @method_decorator(csrf_exempt, name="dispatch")
+# class UserCreateView(CreateView):
+#     model = User
+#     fields = ["id", "first_name", "last_name", "username", "password", "role", "age", "locations"]
+#
+#     def post(self, request, *args, **kwargs):
+#         """
+#         method for add ad data
+#         :param request: request
+#         :return: saving new data to db
+#         """
+#         user_data = json.loads(request.body)
+#
+#         locations = user_data.pop("locations")
+#         user = User.objects.create(**user_data)
+#
+#         for location_name in locations:
+#             loc, created = Location.objects.get_or_create(name=location_name)
+#             user.locations.add(loc)
+#
+#         return JsonResponse(user.serialize())
 
-    def post(self, request, *args, **kwargs):
-        """
-        method for add ad data
-        :param request: request
-        :return: saving new data to db
-        """
-        user_data = json.loads(request.body)
+class UserCreateView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
 
-        locations = user_data.pop("locations")
-        user = User.objects.create(**user_data)
-
-        for location_name in locations:
-            loc, created = Location.objects.get_or_create(name=location_name)
-            user.locations.add(loc)
-
-        return JsonResponse(user.serialize())
 
 
 # update class for ads

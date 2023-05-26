@@ -18,8 +18,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework import routers
+from ads.views import LocationViewSet
 
 import ads.views
+
+router = routers.SimpleRouter()
+router.register('location', LocationViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +34,7 @@ urlpatterns = [
     path('ad/', include('ads.urls.ads_urls')),
     path('cat/', include('ads.urls.cats_urls')),
     path('user/', include('ads.urls.user_urls')),
-    path('location/', include('ads.urls.location_urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += router.urls

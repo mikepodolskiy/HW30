@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.viewsets import ModelViewSet
 
 from HW27 import settings
 from ads.models import Ads, Categories, User, Location
@@ -68,10 +69,12 @@ class AdsListView(ListAPIView):
 
     def get(self, request, *args, **kwargs):
 
+        # filter by name of ad
         ad_text = request.GET.get("text", None)
         if ad_text:
             self.queryset = self.queryset.filter(name__icontains=ad_text)
 
+        # filter by category of ad
         cats = request.GET.getlist("cat", None)
         cats_query = None
         for cat in cats:
@@ -82,15 +85,26 @@ class AdsListView(ListAPIView):
         if cats_query:
             self.queryset = self.queryset.filter(cats_query)
 
+        # filter by location of ad
         location = request.GET.get("location", None)
 
         if location:
             self.queryset = self.queryset.filter(author__locations__name__icontains=location)
 
+        price_from = request.GET.getlist("price_from", None)
+        price_to = request.GET.getlist("price_to", None)
+        if price_from and price_from.is_digit():
+            self.queryset = self.queryset.filter(price__gte=price_from)
+
+        # filter by price of ad
+        if price_to and price_to.is_digit():
+            self.queryset = self.queryset.filter(price__lte=price_from)
+
         return super().get(request, *args, **kwargs)
 
+        # class for view of one element
 
-# class for view of one element
+
 class AdDetailView(DetailView):
     model = Ads
 
@@ -453,7 +467,7 @@ class UserDeleteView(DeleteView):
 
 # Location views with DRF
 
-class LocationListView(ListAPIView):
+class LocationViewSet(ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationListSerializer
 

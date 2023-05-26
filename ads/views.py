@@ -76,18 +76,16 @@ class AdsListView(ListAPIView):
         cats_query = None
         for cat in cats:
             if cats_query is None:
-                cats_query = Q(category_id__exact=cat)
+                cats_query = Q(category__id__exact=cat)
             else:
                 cats_query |= Q(category__id__exact=cat)
         if cats_query:
             self.queryset = self.queryset.filter(cats_query)
 
+        location = request.GET.get("location", None)
 
-
-
-
-
-
+        if location:
+            self.queryset = self.queryset.filter(author__locations__name__icontains=location)
 
         return super().get(request, *args, **kwargs)
 

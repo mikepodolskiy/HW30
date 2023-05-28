@@ -91,14 +91,16 @@ class AdsListView(ListAPIView):
         if location:
             self.queryset = self.queryset.filter(author__locations__name__icontains=location)
 
-        price_from = request.GET.getlist("price_from", None)
-        price_to = request.GET.getlist("price_to", None)
+        price_from = request.GET.get("price_from", None)
+        price_to = request.GET.get("price_to", None)
         if price_from and price_from.is_digit():
             self.queryset = self.queryset.filter(price__gte=price_from)
 
         # filter by price of ad
         if price_to and price_to.is_digit():
             self.queryset = self.queryset.filter(price__lte=price_from)
+
+        self.queryset = self.queryset.order_by(("-price"))
 
         return super().get(request, *args, **kwargs)
 
@@ -471,25 +473,25 @@ class LocationViewSet(ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationListSerializer
 
-
-class LocationDetailView(RetrieveAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationDetailSerializer
-
-
-class LocationCreateView(CreateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationCreateSerializer
-
-
-class LocationUpdateView(UpdateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationUpdateSerializer
-
-
-class LocationDeleteView(DestroyAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationDeleteSerializer
+#
+# class LocationDetailView(RetrieveAPIView):
+#     queryset = Location.objects.all()
+#     serializer_class = LocationDetailSerializer
+#
+#
+# class LocationCreateView(CreateAPIView):
+#     queryset = Location.objects.all()
+#     serializer_class = LocationCreateSerializer
+#
+#
+# class LocationUpdateView(UpdateAPIView):
+#     queryset = Location.objects.all()
+#     serializer_class = LocationUpdateSerializer
+#
+#
+# class LocationDeleteView(DestroyAPIView):
+#     queryset = Location.objects.all()
+#     serializer_class = LocationDeleteSerializer
 
 ################################################################
 # class LocationListView(ListView):

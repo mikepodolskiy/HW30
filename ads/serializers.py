@@ -1,10 +1,11 @@
 from rest_framework import serializers
 
-from ads.models import Location, User, Ads
+from ads.models import Ads
+from authentication.models import User, Location
 
 
 class AdsListSerializer(serializers.ModelSerializer):
-    author = serializers.CharField()
+    user = serializers.CharField()
     category = serializers.SlugRelatedField(
         read_only=True,
         slug_field="id"

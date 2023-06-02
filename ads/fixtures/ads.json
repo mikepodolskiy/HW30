@@ -9,7 +9,7 @@
       "is_published": true,
       "image": "images/post1.jpg",
       "category": "1",
-      "author": "1"
+      "user": "1"
     }
   },
   {
@@ -22,7 +22,7 @@
       "is_published": true,
       "image": "images/post1.jpg",
       "category": "1",
-      "author": "1"
+      "user": "1"
     }
   },
   {
@@ -35,7 +35,7 @@
       "is_published": true,
       "image": "images/post2.png",
       "category": "3",
-      "author": "1"
+      "user": "1"
     }
   },
   {
@@ -48,7 +48,7 @@
       "is_published": true,
       "image": "images/post2.png",
       "category": "3",
-      "author": "1"
+      "user": "1"
     }
   },
   {
@@ -61,7 +61,7 @@
       "is_published": true,
       "image": "images/post3.png",
       "category": "3",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -74,7 +74,7 @@
       "is_published": true,
       "image": "images/post3.png",
       "category": "3",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -87,7 +87,7 @@
       "is_published": true,
       "image": "images/post4.jpg",
       "category": "3",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -100,7 +100,7 @@
       "is_published": true,
       "image": "images/post4.jpg",
       "category": "3",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -113,7 +113,7 @@
       "is_published": true,
       "image": "images/post5.png",
       "category": "3",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -126,7 +126,7 @@
       "is_published": true,
       "image": "images/post5.png",
       "category": "3",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -139,7 +139,7 @@
       "is_published": true,
       "image": "images/post6.jpg",
       "category": "3",
-      "author": "8"
+      "user": "8"
     }
   },
   {
@@ -152,7 +152,7 @@
       "is_published": true,
       "image": "images/post6.jpg",
       "category": "3",
-      "author": "8"
+      "user": "8"
     }
   },
   {
@@ -165,7 +165,7 @@
       "is_published": true,
       "image": "images/post7.jpg",
       "category": "1",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -178,7 +178,7 @@
       "is_published": true,
       "image": "images/post7.jpg",
       "category": "1",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -191,7 +191,7 @@
       "is_published": true,
       "image": "images/post8.jpg",
       "category": "1",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -204,7 +204,7 @@
       "is_published": true,
       "image": "images/post8.jpg",
       "category": "1",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -217,7 +217,7 @@
       "is_published": true,
       "image": "images/post9.jpg",
       "category": "2",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -230,7 +230,7 @@
       "is_published": true,
       "image": "images/post9.jpg",
       "category": "2",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -243,7 +243,7 @@
       "is_published": false,
       "image": "images/post10.jpg",
       "category": "2",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -256,7 +256,7 @@
       "is_published": false,
       "image": "images/post10.jpg",
       "category": "2",
-      "author": "5"
+      "user": "5"
     }
   },
   {
@@ -269,7 +269,7 @@
       "is_published": true,
       "image": "images/post11.jpg",
       "category": "5",
-      "author": "6"
+      "user": "6"
     }
   },
   {
@@ -282,7 +282,7 @@
       "is_published": true,
       "image": "images/post11.jpg",
       "category": "5",
-      "author": "6"
+      "user": "6"
     }
   },
   {
@@ -295,7 +295,7 @@
       "is_published": true,
       "image": "images/post12.jpg",
       "category": "2",
-      "author": "6"
+      "user": "6"
     }
   },
   {
@@ -308,7 +308,7 @@
       "is_published": true,
       "image": "images/post12.jpg",
       "category": "2",
-      "author": "6"
+      "user": "6"
     }
   },
   {
@@ -321,7 +321,7 @@
       "is_published": true,
       "image": "images/post13.jpg",
       "category": "2",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -334,7 +334,7 @@
       "is_published": true,
       "image": "images/post13.jpg",
       "category": "2",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -347,7 +347,7 @@
       "is_published": true,
       "image": "images/post14.jpg",
       "category": "4",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -360,7 +360,7 @@
       "is_published": true,
       "image": "images/post14.jpg",
       "category": "4",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -373,7 +373,7 @@
       "is_published": true,
       "image": "images/post15.jpg",
       "category": "4",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -386,7 +386,7 @@
       "is_published": true,
       "image": "images/post15.jpg",
       "category": "4",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -399,7 +399,7 @@
       "is_published": true,
       "image": "images/post16.jpg",
       "category": "4",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -412,7 +412,7 @@
       "is_published": true,
       "image": "images/post16.jpg",
       "category": "4",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -425,7 +425,7 @@
       "is_published": false,
       "image": "images/post17.jpg",
       "category": "2",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -438,7 +438,7 @@
       "is_published": false,
       "image": "images/post17.jpg",
       "category": "2",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -451,7 +451,7 @@
       "is_published": true,
       "image": "images/post18.jpg",
       "category": "5",
-      "author": "1"
+      "user": "1"
     }
   },
   {
@@ -464,7 +464,7 @@
       "is_published": true,
       "image": "images/post18.jpg",
       "category": "5",
-      "author": "1"
+      "user": "1"
     }
   },
   {
@@ -477,7 +477,7 @@
       "is_published": true,
       "image": "images/post19.jpg",
       "category": "5",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -490,7 +490,7 @@
       "is_published": true,
       "image": "images/post19.jpg",
       "category": "5",
-      "author": "10"
+      "user": "10"
     }
   },
   {
@@ -503,7 +503,7 @@
       "is_published": true,
       "image": "images/post20.jpg",
       "category": "1",
-      "author": "7"
+      "user": "7"
     }
   },
   {
@@ -516,7 +516,7 @@
       "is_published": true,
       "image": "images/post20.jpg",
       "category": "1",
-      "author": "7"
+      "user": "7"
     }
   }
 ]

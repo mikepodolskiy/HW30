@@ -12,7 +12,8 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView,
 from rest_framework.viewsets import ModelViewSet
 
 from HW27 import settings
-from ads.models import Ads, Categories, User, Location
+from ads.models import Ads, Categories
+from authentication.models import User, Location
 from ads.serializers import UserCreateSerializer, LocationListSerializer, LocationDetailSerializer, \
     LocationCreateSerializer, LocationUpdateSerializer, LocationDeleteSerializer, AdsListSerializer
 
@@ -45,7 +46,7 @@ def index(request):
 #         ads = [{
 #             "id": ad.id,
 #             "name": ad.name,
-#             "author": ad.author.id,
+#             "user": ad.user.id,
 #             "price": ad.price,
 #             "description": ad.description,
 #             "is_published": ad.is_published,
@@ -89,7 +90,7 @@ class AdsListView(ListAPIView):
         location = request.GET.get("location", None)
 
         if location:
-            self.queryset = self.queryset.filter(author__locations__name__icontains=location)
+            self.queryset = self.queryset.filter(user__locations__name__icontains=location)
 
         price_from = request.GET.get("price_from", None)
         price_to = request.GET.get("price_to", None)
@@ -114,13 +115,13 @@ class AdDetailView(DetailView):
         """
        method for getting one element info
        :param request: request
-       :return: id, name, author, price, description, address, is_published in dict
+       :return: id, name, user, price, description, address, is_published in dict
        """
         ad = self.get_object()
         response = {
             "id": ad.id,
             "name": ad.name,
-            "author": ad.author.id,
+            "user": ad.user.id,
             "price": ad.price,
             "description": ad.description,
             "is_published": ad.is_published,
@@ -133,8 +134,7 @@ class AdDetailView(DetailView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdCreateView(CreateView):
     model = Ads
-    fields = ["id", "name", "author", "price", "description", "is_published", "image", "category"]
-
+    fields = "__all__"
     def post(self, request, *args, **kwargs):
         """
         method for add ad data
@@ -144,12 +144,12 @@ class AdCreateView(CreateView):
         ad_data = json.loads(request.body)
 
         # getting objects from another instances, which are used as source of data
-        author = get_object_or_404(User, pk=ad_data.get("author"))
-        category = get_object_or_404(Categories, pk=ad_data.get("author"))
+        user = get_object_or_404(User, pk=ad_data.get("user"))
+        category = get_object_or_404(Categories, pk=ad_data.get("user"))
 
         ad = Ads.objects.create(
             name=ad_data["name"],
-            author=author,
+            user=user,
             price=ad_data["price"],
             description=ad_data["description"],
             is_published=ad_data["is_published"],
@@ -160,7 +160,7 @@ class AdCreateView(CreateView):
         return JsonResponse({
             "id": ad.id,
             "name": ad.name,
-            "author": ad.author.id,
+            "user": ad.user.id,
             "price": ad.price,
             "description": ad.description,
             "is_published": ad.is_published,
@@ -174,7 +174,7 @@ class AdCreateView(CreateView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdUpdateView(UpdateView):
     model = Ads
-    fields = ["id", "name", "author", "price", "description", "is_published", "image", "category"]
+    fields = ["id", "name", "user", "price", "description", "is_published", "image", "category"]
 
     def patch(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
@@ -185,9 +185,9 @@ class AdUpdateView(UpdateView):
         # checking what data are in request and set new object data, request to another instances if required
         if "name" in ad_data:
             self.object.name = ad_data["name"]
-        if "author" in ad_data:
-            author = get_object_or_404(User, pk=ad_data.get("author"))
-            self.object.author = author
+        if "user" in ad_data:
+            user = get_object_or_404(User, pk=ad_data.get("user"))
+            self.object.user = user
         if "price" in ad_data:
             self.object.price = ad_data["price"]
         if "description" in ad_data:
@@ -206,7 +206,7 @@ class AdUpdateView(UpdateView):
         return JsonResponse({
             "id": self.object.id,
             "name": self.object.name,
-            "author": self.object.author.id,
+            "user": self.object.user.id,
             "price": self.object.price,
             "description": self.object.description,
             "is_published": self.object.is_published,
@@ -232,7 +232,7 @@ class AdDeleteView(DeleteView):
 @method_decorator(csrf_exempt, name="dispatch")
 class AdImageView(UpdateView):
     model = Ads
-    fields = ["id", "name", "author", "price", "description", "address", "is_published", "image", "category"]
+    fields = ["id", "name", "user", "price", "description", "address", "is_published", "image", "category"]
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -244,7 +244,7 @@ class AdImageView(UpdateView):
         return JsonResponse({
             "id": self.object.id,
             "name": self.object.name,
-            "author_id": self.object.author.id,
+            "user_id": self.object.user.id,
             "price": self.object.price,
             "description": self.object.description,
             "is_published": self.object.is_published,

@@ -8,12 +8,13 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from ads.models import Ads, Categories
+from ads.permissions import AdUpdatePermission, AdDeletePermission
 from authentication.models import User
-from ads.serializers import AdsListSerializer, AdDetailSerializer
+from ads.serializers import AdsListSerializer, AdDetailSerializer, AdUpdateSerializer, AdDeleteSerializer
 
 
 # start page using FBV
@@ -72,30 +73,6 @@ class AdDetailView(RetrieveAPIView):
 
 
 
-# class AdDetailView(DetailView):
-#     model = Ads
-#
-#
-#     def get(self, request, *args, **kwargs):
-#         """
-#        method for getting one element info
-#        :param request: request
-#        :return: id, name, user, price, description, address, is_published in dict
-#        """
-#         ad = self.get_object()
-#         response = {
-#             "id": ad.id,
-#             "name": ad.name,
-#             "user": ad.user.id,
-#             "price": ad.price,
-#             "description": ad.description,
-#             "is_published": ad.is_published,
-#             "image": ad.image.url,
-#             "category": ad.category.id
-#         }
-#         return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class AdCreateView(CreateView):
     model = Ads
@@ -135,52 +112,18 @@ class AdCreateView(CreateView):
 
 
 # update class for ads
-
-@method_decorator(csrf_exempt, name="dispatch")
-class AdUpdateView(UpdateView):
-    model = Ads
-    fields = ["id", "name", "user", "price", "description", "is_published", "image", "category"]
-
-    def patch(self, request, *args, **kwargs):
-        super().post(request, *args, **kwargs)
-
-        # getting data from request
-        ad_data = json.loads(request.body)
-
-        # checking what data are in request and set new object data, request to another instances if required
-        if "name" in ad_data:
-            self.object.name = ad_data["name"]
-        if "user" in ad_data:
-            user = get_object_or_404(User, pk=ad_data.get("user"))
-            self.object.user = user
-        if "price" in ad_data:
-            self.object.price = ad_data["price"]
-        if "description" in ad_data:
-            self.object.description = ad_data["description"]
-        if "image" in ad_data:
-            self.object.image = ad_data["image"]
-        if "is_published" in ad_data:
-            self.object.is_published = ad_data["is_published"]
-        if "category" in ad_data:
-            category = get_object_or_404(Categories, pk=ad_data.get("category"))
-            self.object.category = category
-
-        # save data to db
-        self.object.save()
-
-        return JsonResponse({
-            "id": self.object.id,
-            "name": self.object.name,
-            "user": self.object.user.id,
-            "price": self.object.price,
-            "description": self.object.description,
-            "is_published": self.object.is_published,
-            "image": self.object.image.url,
-            "category": self.object.category.id
-        })
+class AdUpdateView(UpdateAPIView):
+    queryset = Ads.objects.all()
+    serializer_class = AdUpdateSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser, AdUpdatePermission]
 
 
 # delete class for ads
+
+class AdDeleteView(UpdateAPIView):
+    queryset = Ads.objects.all()
+    serializer_class = AdDeleteSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser, AdDeletePermission]
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdDeleteView(DeleteView):

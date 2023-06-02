@@ -18,7 +18,7 @@ class User(AbstractUser):
     ROLE = [("member", "участник"), ("moderator", "модератор"), ("admin", "администратор")]
 
     role = models.CharField(max_length=9, choices=ROLE)
-    age = models.PositiveSmallIntegerField(null=True)
+    age = models.PositiveSmallIntegerField()
     locations = models.ManyToManyField(Location)
 
     def save(self,*args, **kwargs):

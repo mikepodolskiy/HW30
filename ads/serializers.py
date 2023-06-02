@@ -21,3 +21,13 @@ class AdDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class AdUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ads
+        fields = "__all__"
+
+
+class AdDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ads
+        fields = "__all__"

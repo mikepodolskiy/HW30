@@ -8,11 +8,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from ads.models import Ads, Categories
 from authentication.models import User
-from ads.serializers import  AdsListSerializer
+from ads.serializers import AdsListSerializer, AdDetailSerializer
 
 
 # start page using FBV
@@ -64,27 +65,35 @@ class AdsListView(ListAPIView):
         # class for view of one element
 
 
-class AdDetailView(DetailView):
-    model = Ads
+class AdDetailView(RetrieveAPIView):
+    queryset = Ads.objects.all()
+    serializer_class = AdDetailSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        """
-       method for getting one element info
-       :param request: request
-       :return: id, name, user, price, description, address, is_published in dict
-       """
-        ad = self.get_object()
-        response = {
-            "id": ad.id,
-            "name": ad.name,
-            "user": ad.user.id,
-            "price": ad.price,
-            "description": ad.description,
-            "is_published": ad.is_published,
-            "image": ad.image.url,
-            "category": ad.category.id
-        }
-        return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
+
+
+# class AdDetailView(DetailView):
+#     model = Ads
+#
+#
+#     def get(self, request, *args, **kwargs):
+#         """
+#        method for getting one element info
+#        :param request: request
+#        :return: id, name, user, price, description, address, is_published in dict
+#        """
+#         ad = self.get_object()
+#         response = {
+#             "id": ad.id,
+#             "name": ad.name,
+#             "user": ad.user.id,
+#             "price": ad.price,
+#             "description": ad.description,
+#             "is_published": ad.is_published,
+#             "image": ad.image.url,
+#             "category": ad.category.id
+#         }
+#         return JsonResponse(response, safe=False, json_dumps_params={"ensure_ascii": False})
 
 
 @method_decorator(csrf_exempt, name="dispatch")

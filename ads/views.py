@@ -8,13 +8,14 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from ads.models import Ads, Categories
-from ads.permissions import AdUpdatePermission, AdDeletePermission
+from ads.permissions import IsAdminModer, IsAuthorPermission
 from authentication.models import User
 from ads.serializers import AdsListSerializer, AdDetailSerializer, AdUpdateSerializer, AdDeleteSerializer
+from authentication.serializers import UserCreateSerializer
 
 
 # start page using FBV
@@ -72,6 +73,10 @@ class AdDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 
+# class AdCreateView(CreateAPIView):
+#     queryset = Ads.objects.all()
+#     serializer_class = UserCreateSerializer
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdCreateView(CreateView):
@@ -115,7 +120,7 @@ class AdCreateView(CreateView):
 class AdUpdateView(UpdateAPIView):
     queryset = Ads.objects.all()
     serializer_class = AdUpdateSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, AdUpdatePermission]
+    permission_classes = [IsAdminModer]
 
 
 # delete class for ads
@@ -123,7 +128,7 @@ class AdUpdateView(UpdateAPIView):
 class AdDeleteView(UpdateAPIView):
     queryset = Ads.objects.all()
     serializer_class = AdDeleteSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, AdDeletePermission]
+    permission_classes = [IsAdminModer]
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdDeleteView(DeleteView):

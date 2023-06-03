@@ -1,20 +1,20 @@
 # import required libraries and modules
 import json
 
-
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-from ads.models import Ads, Categories
+from ads.models import Ads, Categories, AdsSet
 from ads.permissions import IsAdminModer, IsAuthorPermission
 from authentication.models import User
-from ads.serializers import AdsListSerializer, AdDetailSerializer, AdUpdateSerializer, AdDeleteSerializer
+from ads.serializers import AdsListSerializer, AdDetailSerializer, AdUpdateSerializer, AdDeleteSerializer, \
+    AdsSetListSerializer, AdsSetDetailSerializer, AdsSetCreateSerializer, AdsSetUpdateSerializer, AdsSetDeleteSerializer
 from authentication.serializers import UserCreateSerializer
 
 
@@ -82,6 +82,7 @@ class AdDetailView(RetrieveAPIView):
 class AdCreateView(CreateView):
     model = Ads
     fields = "__all__"
+
     def post(self, request, *args, **kwargs):
         """
         method for add ad data
@@ -129,6 +130,7 @@ class AdDeleteView(UpdateAPIView):
     queryset = Ads.objects.all()
     serializer_class = AdDeleteSerializer
     permission_classes = [IsAdminModer]
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdDeleteView(DeleteView):
@@ -263,3 +265,28 @@ class CategoryDeleteView(DeleteView):
         return JsonResponse({"status": "ok"}, status=200)
 
 
+# AdsSet views
+
+class AdsSetListView(ListAPIView):
+    queryset = AdsSet.objects.all()
+    serializer_class = AdsSetListSerializer
+
+
+class AdsSetDetailView(RetrieveAPIView):
+    queryset = AdsSet.objects.all()
+    serializer_class = AdsSetDetailSerializer
+
+
+class AdsSetCreateView(CreateAPIView):
+    queryset = AdsSet.objects.all()
+    serializer_class = AdsSetCreateSerializer
+
+
+class AdsSetUpdateView(UpdateAPIView):
+    queryset = AdsSet.objects.all()
+    serializer_class = AdsSetUpdateSerializer
+
+
+class AdsSetDeleteView(DestroyAPIView):
+    queryset = AdsSet.objects.all()
+    serializer_class = AdsSetDeleteSerializer

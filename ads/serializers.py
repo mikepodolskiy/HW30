@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 
 from ads.models import Ads, AdsSet
 
@@ -52,6 +53,7 @@ class AdsSetDetailSerializer(serializers.ModelSerializer):
 
 
 class AdsSetCreateSerializer(serializers.ModelSerializer):
+    user = SlugRelatedField(slug_field="username", read_only=True)
     class Meta:
         model = AdsSet
         fields = "__all__"

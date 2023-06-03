@@ -11,10 +11,10 @@ class IsAdminModer(BasePermission):
     def has_permission(self, request, view):
         return request.user.role in ("admin", "moderator")
 
-class IsAuthorPermission(BasePermission):
-    message = "Ad update or delete available only for ad's author"
 
-    def has_permission(self, request, view):
-        if request.user.username == Ads.objects.get("user"):
-            return True
-        return False
+class IsAuthorPermission(BasePermission):
+    message = "Action available only for author"
+
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+

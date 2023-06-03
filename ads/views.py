@@ -73,11 +73,6 @@ class AdDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 
-# class AdCreateView(CreateAPIView):
-#     queryset = Ads.objects.all()
-#     serializer_class = UserCreateSerializer
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class AdCreateView(CreateView):
     model = Ads
@@ -121,7 +116,7 @@ class AdCreateView(CreateView):
 class AdUpdateView(UpdateAPIView):
     queryset = Ads.objects.all()
     serializer_class = AdUpdateSerializer
-    permission_classes = [IsAdminModer]
+    permission_classes = [IsAdminModer, IsAuthorPermission]
 
 
 # delete class for ads
@@ -129,7 +124,7 @@ class AdUpdateView(UpdateAPIView):
 class AdDeleteView(UpdateAPIView):
     queryset = Ads.objects.all()
     serializer_class = AdDeleteSerializer
-    permission_classes = [IsAdminModer]
+    permission_classes = [IsAdminModer, IsAuthorPermission]
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -280,13 +275,16 @@ class AdsSetDetailView(RetrieveAPIView):
 class AdsSetCreateView(CreateAPIView):
     queryset = AdsSet.objects.all()
     serializer_class = AdsSetCreateSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class AdsSetUpdateView(UpdateAPIView):
     queryset = AdsSet.objects.all()
     serializer_class = AdsSetUpdateSerializer
+    permission_classes = [IsAuthorPermission]
 
 
 class AdsSetDeleteView(DestroyAPIView):
     queryset = AdsSet.objects.all()
     serializer_class = AdsSetDeleteSerializer
+    permission_classes = [IsAuthorPermission]
